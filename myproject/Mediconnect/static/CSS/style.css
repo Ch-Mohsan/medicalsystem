@@ -1,0 +1,65 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Popularity Section */
+.icon-float-speciality {
+    transition: transform 0.3s ease-in-out;
+}
+
+.group:hover .icon-float-speciality {
+    transform: translateY(-6px) scale(1.05);
+}
+/* End of Popularity Section */
+
+/* *********************** */
+
+/* Work Section */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.icon-float {
+    animation: float 3s ease-in-out infinite;
+}
+/* End of Work Section */
+
+/* *********************** */
+
+/* Top Doctors section */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+/* End of Top Doctors Section */
+
+/* ************************** */
+
+/* Reviews Section */
+#reviews-slider::-webkit-scrollbar {
+    display: none;
+}
+
+#reviews-slider {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* End of Reviews Section */

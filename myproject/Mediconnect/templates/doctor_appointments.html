@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Appointments - MediConnect{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative pt-24 pb-12 bg-gradient-to-b from-brand-50/50 to-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center">
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-4">Patient Appointments</h1>
+            <p class="text-lg text-gray-600">View and manage your patient appointments</p>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        
+        <!-- DOCTOR VIEW - Appointments List -->
+        <div class="space-y-6">
+            {% if appointments %}
+                {% for appointment in appointments %}
+                <!-- Appointment Card -->
+                <div class="bg-white rounded-2xl border border-gray-100 hover:border-brand-light hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex flex-col lg:flex-row gap-6">
+                            <!-- Patient Info -->
+                            <div class="flex gap-4 flex-1">
+                                {% if appointment.patient.user.profile_image %}
+                                <img src="{{ appointment.patient.user.profile_image.url }}" alt="{{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}" class="w-20 h-20 rounded-xl object-cover shadow-sm">
+                                {% else %}
+                                <div class="w-20 h-20 rounded-xl bg-brand-100 flex items-center justify-center shadow-sm">
+                                    <span class="text-xl font-bold text-brand-600">{{ appointment.patient.user.first_name.0 }}{{ appointment.patient.user.last_name.0 }}</span>
+                                </div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-1">{{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}</h3>
+                                    <p class="text-gray-600 text-sm mb-2">{{ appointment.patient.gender|default:"N/A" }}</p>
+                                    <div class="flex items-center gap-3 text-sm text-gray-600">
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                            </svg>
+                                            {{ appointment.patient.user.phone|default:"N/A" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appointment Details -->
+                            <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+                                <div class="flex gap-6">
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Date</p>
+                                        <p class="font-bold text-gray-900">{{ appointment.appointment_date|date:"M d, Y" }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Time</p>
+                                        <p class="font-bold text-gray-900">{{ appointment.time_slot }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Status</p>
+                                        {% if appointment.status == 'confirmed' %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                            Confirmed
+                                        </span>
+                                        {% elif appointment.status == 'pending' %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
+                                            Pending Confirmation
+                                        </span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                            Cancelled
+                                        </span>
+                                        {% elif appointment.status == 'declined' %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                            Declined
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if appointment.reason %}
+                        <span class="flex items-center gap-2 text-gray-600 pt-6">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                            </svg>
+                            Reason: {{ appointment.reason }}
+                        </span>
+                        {% endif %}
+
+                        <!-- Additional Info -->
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex flex-wrap items-center gap-6 text-sm">
+                                <span class="flex items-center gap-2 text-gray-600">
+                                    Fee: PKR {{ appointment.consultation_fee }}
+                                </span>
+                            </div>
+                            <div class="flex gap-4">
+                                <a href="{% url 'patient_detail' appointment.patient.id %}" class="text-brand-primary font-semibold text-sm hover:text-brand-dark transition-colors flex items-center gap-1">
+                                    View Patient Details
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                                <!-- Actions -->
+                                {% if appointment.status == 'pending' %}
+                                <div class="flex items-center gap-3">
+                                    <button onclick="updateAppointmentStatus({{ appointment.id }}, 'confirm')" class="px-4 py-2 rounded-lg bg-brand-primary text-white font-medium text-sm hover:bg-brand-dark transition-colors shadow-sm">
+                                        Confirm
+                                    </button>
+                                    <button onclick="updateAppointmentStatus({{ appointment.id }}, 'decline')" class="px-4 py-2 rounded-lg border border-red-200 text-red-600 font-medium text-sm hover:bg-red-50 transition-colors">
+                                        Decline
+                                    </button>
+                                </div>
+                                {% elif appointment.status == 'confirmed' %}
+                                <div class="flex items-center gap-3">
+                                    <button onclick="updateAppointmentStatus({{ appointment.id }}, 'cancel')" class="px-4 py-2 rounded-lg border border-red-200 text-red-600 font-medium text-sm hover:bg-red-50 transition-colors">
+                                        Cancel
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-16">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">No Appointments Yet</h3>
+                    <p class="text-gray-600 mb-6">You don't have any patient appointments scheduled</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+<script>
+    async function updateAppointmentStatus(id, action) {
+        if (!confirm(`Are you sure you want to ${action} this appointment?`)) return;
+
+        let url = '';
+        if (action === 'confirm') url = `/api/appointment/confirm/${id}/`;
+        else if (action === 'decline') url = `/api/appointment/decline/${id}/`;
+        else if (action === 'cancel') url = `/api/appointment/cancel/${id}/`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Reload to reflect changes
+                window.location.reload(); 
+            } else {
+                alert(result.error || `Failed to ${action} appointment.`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An unexpected error occurred.');
+        }
+    }
+</script>
+
+{% endblock %}

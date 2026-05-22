@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - MediConnect{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative pt-24 pb-12 bg-gradient-to-b from-brand-50/50 to-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center">
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-4">My Profile</h1>
+            <p class="text-lg text-gray-600">Manage your personal information and preferences</p>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <form method="post" enctype="multipart/form-data" action="">
+            {% csrf_token %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Sidebar - Profile Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24">
+                    <!-- Profile Picture -->
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block">
+                            {% if user.profile_image %}
+                            <img id="profileImagePreview" src="{{ user.profile_image.url }}" alt="{{ user.first_name }} {{ user.last_name }}" class="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white">
+                            {% else %}
+                            <div id="profileImagePreview" class="w-32 h-32 rounded-full bg-brand-100 flex items-center justify-center shadow-lg border-4 border-white">
+                                <span class="text-3xl font-bold text-brand-600">{{ user.first_name.0 }}{{ user.last_name.0 }}</span>
+                            </div>
+                            {% endif %}
+                            <button type="button" onclick="document.getElementById('profileImageInput').click()" class="absolute bottom-0 right-0 w-10 h-10 bg-brand-primary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-dark transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </button>
+                            <input type="file" id="profileImageInput" name="profile_image" accept="image/*" class="hidden" onchange="previewImage(event)">
+                        </div>
+                        <p id="saveMessage" class="text-xs text-brand-primary font-semibold mt-2 hidden">Click "Save Changes" to apply</p>
+                        <h3 class="font-bold text-xl text-gray-900 mt-4 mb-1">{{ user.first_name }} {{ user.last_name }}</h3>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="space-y-3 mb-6 pt-6 border-t border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Total Appointments</span>
+                            <span class="font-bold text-gray-900">{{ total_appointments }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Upcoming</span>
+                            <span class="font-bold text-brand-primary">{{ upcoming_appointments }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Member Since</span>
+                            <span class="font-bold text-gray-900">{{ user.date_joined|date:"M Y" }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="space-y-3">
+                        <a href="{% url 'appointments' %}" class="block w-full px-4 py-3 bg-brand-primary text-white text-center font-semibold rounded-xl hover:bg-brand-dark transition-all shadow-sm">
+                            View Appointments
+                        </a>
+                        <a href="{% url 'doctors' %}" class="block w-full px-4 py-3 bg-gray-100 text-gray-700 text-center font-semibold rounded-xl hover:bg-gray-200 transition-all">
+                            Find Doctors
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content - Profile Form -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Error Messages -->
+                {% if user_form.errors or patient_form.errors %}
+                <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl">
+                    <p class="font-semibold mb-2">Please correct the following errors:</p>
+                    <ul class="list-disc list-inside text-sm">
+                        {% for field in user_form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for field in patient_form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <!-- Personal Information -->
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-bold text-2xl text-gray-900">Personal Information</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ user_form.first_name.label }}</label>
+                            {{ user_form.first_name }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ user_form.last_name.label }}</label>
+                            {{ user_form.last_name }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.date_of_birth.label }}</label>
+                            {{ patient_form.date_of_birth }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.gender.label }}</label>
+                            {{ patient_form.gender }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.blood_group.label }}</label>
+                            {{ patient_form.blood_group }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.height.label }}</label>
+                            {{ patient_form.height }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.weight.label }}</label>
+                            {{ patient_form.weight }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-bold text-2xl text-gray-900">Contact Information</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ user_form.email.label }}</label>
+                            {{ user_form.email }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ user_form.phone.label }}</label>
+                            {{ user_form.phone }}
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.address.label }}</label>
+                            {{ patient_form.address }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical History -->
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-bold text-2xl text-gray-900">Medical History</h2>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.allergies.label }}</label>
+                            {{ patient_form.allergies }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.current_medication.label }}</label>
+                            {{ patient_form.current_medication }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ patient_form.emergency_contact.label }}</label>
+                            {{ patient_form.emergency_contact }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="flex items-center justify-end gap-4">
+                    <button class="px-6 py-3 bg-brand-primary text-white font-semibold rounded-xl hover:bg-brand-dark transition-all shadow-lg shadow-brand-primary/30" type="submit">
+                        Save Changes
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        </form>
+    </div>
+</section>
+
+<script>
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('profileImagePreview');
+            const saveMessage = document.getElementById('saveMessage');
+            // Replace initials div or existing image with new image
+            preview.outerHTML = `<img id="profileImagePreview" src="${e.target.result}" alt="Profile Preview" class="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white">`;
+            // Show save message
+            if (saveMessage) {
+                saveMessage.classList.remove('hidden');
+            }
+        }
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+
+{% endblock %}

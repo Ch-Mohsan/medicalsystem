@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Find Doctors - MediConnect{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative pt-24 pb-12 bg-gradient-to-b from-brand-50/50 to-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center">
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find Your Perfect Doctor</h1>
+            <p class="text-lg text-gray-600">Search from over 50+ verified healthcare professionals</p>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Filters Sidebar -->
+            <aside class="lg:w-80 flex-shrink-0">
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24">
+                    <div class="flex items-center justify-between pb-4">
+                        <h3 class="font-bold text-lg text-gray-900">Filters</h3>
+                        <a href="{% url 'doctors' %}" class="text-sm text-brand-primary hover:text-brand-dark font-medium">Clear All</a>
+                    </div>
+
+                    <!-- Fee Range Filter -->
+                    <div class="pb-6 border-b border-gray-100">
+                        <h4 class="font-semibold text-sm text-gray-900 mb-3">Consultation Fee</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="fee" value="" onchange="applyFilters()" {% if not search_params.fee %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">All Fees</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="fee" value="under_5000" onchange="applyFilters()" {% if search_params.fee == 'under_5000' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">Under 5000 PKR</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="fee" value="5000_10000" onchange="applyFilters()" {% if search_params.fee == '5000_10000' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">5000 - 10000 PKR</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="fee" value="10000_15000" onchange="applyFilters()" {% if search_params.fee == '10000_15000' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">10000 - 15000 PKR</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="fee" value="15000_plus" onchange="applyFilters()" {% if search_params.fee == '15000_plus' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">15000+ PKR</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Experience Filter -->
+                    <div class="pb-6 border-b border-gray-100">
+                        <h4 class="font-semibold text-sm text-gray-900 mb-3">Experience</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="experience" value="" onchange="applyFilters()" {% if not search_params.experience %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">All Experience</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="experience" value="0_5" onchange="applyFilters()" {% if search_params.experience == '0_5' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">0-5 Years</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="experience" value="5_10" onchange="applyFilters()" {% if search_params.experience == '5_10' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">5-10 Years</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="experience" value="10_plus" onchange="applyFilters()" {% if search_params.experience == '10_plus' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900">10+ Years</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Rating Filter -->
+                    <div>
+                        <h4 class="font-semibold text-sm text-gray-900 mb-3">Minimum Rating</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="rating" value="" onchange="applyFilters()" {% if not search_params.min_rating %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <div class="flex items-center gap-1">
+                                    <span class="text-sm text-gray-700 group-hover:text-gray-900">All Ratings</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="rating" value="4.5" onchange="applyFilters()" {% if search_params.min_rating == '4.5' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <div class="flex items-center gap-1">
+                                    <span class="text-sm text-gray-700 group-hover:text-gray-900">4.5+</span>
+                                    <div class="flex items-center text-yellow-400">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="rating" value="4.0" onchange="applyFilters()" {% if search_params.min_rating == '4.0' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <div class="flex items-center gap-1">
+                                    <span class="text-sm text-gray-700 group-hover:text-gray-900">4.0+</span>
+                                    <div class="flex items-center text-yellow-400">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="rating" value="3.5" onchange="applyFilters()" {% if search_params.min_rating == '3.5' %}checked{% endif %} class="w-4 h-4 border-gray-300 text-brand-primary focus:ring-brand-primary accent-green-600">
+                                <div class="flex items-center gap-1">
+                                    <span class="text-sm text-gray-700 group-hover:text-gray-900">3.5+</span>
+                                    <div class="flex items-center text-yellow-400">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Results Section -->
+            <div class="flex-1">
+                <!-- Search Bar -->
+                <div class="pb-6">
+                    <form method="GET" action="{% url 'doctors' %}" id="searchForm">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <div class="relative group">
+                                    <input type="text" name="name" id="searchName" value="{{ search_params.name }}" placeholder="Full name" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-light/20 outline-none transition-all">
+                                </div>  
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Specialization</label>
+                                <div class="relative">
+                                    <select name="specialization" id="searchSpecialization" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-light/20 outline-none transition-all appearance-none cursor-pointer">
+                                        <option value="">All Specializations</option>
+                                        {% for spec in specializations %}
+                                        <option value="{{ spec.name }}" {% if search_params.specialization == spec.name %}selected{% endif %}>{{ spec.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-1">
+                                <button type="submit" class="w-full bg-brand-primary hover:bg-brand-dark text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-brand-primary/30 flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                    <span>Search</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Results Header -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="font-bold text-2xl text-gray-900 mb-1">Available Doctors</h2>
+                        <p class="text-sm text-gray-600">Showing <span class="font-semibold text-gray-900">{{ doctors.count }} doctor{{ doctors.count|pluralize }}</span> based on your search</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Sort by:</span>
+                        <select id="sortBy" onchange="applySort()" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:border-brand-primary focus:ring-2 focus:ring-brand-light/20 outline-none cursor-pointer">
+                            <option value="rating_high" {% if search_params.sort_by == 'rating_high' or not search_params.sort_by %}selected{% endif %}>Highest Rated</option>
+                            <option value="rating_low" {% if search_params.sort_by == 'rating_low' %}selected{% endif %}>Lowest Rated</option>
+                            <option value="experience_high" {% if search_params.sort_by == 'experience_high' %}selected{% endif %}>Most Experienced</option>
+                            <option value="experience_low" {% if search_params.sort_by == 'experience_low' %}selected{% endif %}>Least Experienced</option>
+                            <option value="fee_low" {% if search_params.sort_by == 'fee_low' %}selected{% endif %}>Lowest Fee</option>
+                            <option value="fee_high" {% if search_params.sort_by == 'fee_high' %}selected{% endif %}>Highest Fee</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Doctor Cards -->
+                {% for doctor in doctors %}
+                <div class="space-y-6">
+                    <!-- Doctor Card  -->
+                    <div class="bg-white rounded-2xl border border-gray-100 hover:border-brand-light hover:shadow-xl transition-all duration-300 overflow-hidden group mb-6">
+                        <div class="p-6">
+                            <div class="flex flex-col md:flex-row gap-6">
+                                <!-- Doctor Image -->
+                                <div class="flex-shrink-0">
+                                    {% if doctor.user.profile_image %}
+                                    <img src="{{ doctor.user.profile_image.url }}" alt="Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}" class="w-32 h-32 rounded-2xl object-cover shadow-sm">
+                                    {% else %}
+                                    <div class="w-32 h-32 rounded-2xl bg-brand-100 flex items-center justify-center shadow-sm">
+                                        <span class="text-3xl font-bold text-brand-600">{{ doctor.user.first_name.0 }}{{ doctor.user.last_name.0 }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Doctor Info -->
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="text-2xl font-bold text-gray-900 mb-1 group-hover:text-brand-primary transition-colors">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h3>
+                                            <p class="text-brand-primary font-semibold mb-2">{{ doctor.specialization.name|default:"General Practitioner" }}</p>
+                                            <div class="flex items-center gap-4 text-sm text-gray-600">
+                                                {% if doctor.experience_years %}
+                                                <span class="flex items-center gap-1">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                                    </svg>
+                                                    {{ doctor.experience_years }} years experience
+                                                </span>
+                                                {% endif %}
+                                                {% if doctor.clinic_name %}
+                                                <span class="flex items-center gap-1">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                    </svg>
+                                                    {{ doctor.clinic_name }}
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end gap-2">
+                                            <div class="flex items-center gap-1 text-yellow-400">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                <span class="text-gray-900 font-bold text-sm">{{ doctor.avg_rating|default:"0.0"|floatformat:1 }}</span>
+                                                <span class="text-gray-500 text-xs">({{ doctor.review_count }})</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if doctor.bio %}
+                                    <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ doctor.bio }}</p>
+                                    {% endif %}
+
+                                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                        <div class="flex items-center gap-6">
+                                            <div>
+                                                <p class="text-xs text-gray-500 mb-1">Consultation Fee</p>
+                                                <p class="font-bold text-xl text-gray-900">{% if doctor.consultation_fee %}{{ doctor.consultation_fee }} PKR{% else %}Contact for fee{% endif %}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <a href="{% url 'doctor_detail' doctor.id %}" class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors">View Profile</a>
+                                            <a href="{% url 'book_appointment' doctor.id %}" class="px-5 py-2.5 rounded-xl bg-brand-primary text-white font-semibold text-sm hover:bg-brand-dark transition-colors shadow-lg shadow-brand-primary/30">Book Now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Doctor Card  -->     
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function applyFilters() {
+        // Get current search parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Get filter values
+        const feeFilter = document.querySelector('input[name="fee"]:checked')?.value || '';
+        const experienceFilter = document.querySelector('input[name="experience"]:checked')?.value || '';
+        const ratingFilter = document.querySelector('input[name="rating"]:checked')?.value || '';
+        
+        // Get search values (preserve them when filters change)
+        const nameValue = document.getElementById('searchName')?.value || '';
+        const specializationValue = document.getElementById('searchSpecialization')?.value || '';
+        const sortValue = document.getElementById('sortBy')?.value || '';
+        
+        // Build new URL with all parameters
+        const params = new URLSearchParams();
+        
+        if (nameValue) params.set('name', nameValue);
+        if (specializationValue) params.set('specialization', specializationValue);
+        if (feeFilter) params.set('fee', feeFilter);
+        if (experienceFilter) params.set('experience', experienceFilter);
+        if (ratingFilter) params.set('min_rating', ratingFilter);
+        if (sortValue) params.set('sort_by', sortValue);
+        
+        // Redirect to filtered URL
+        window.location.href = '{% url "doctors" %}?' + params.toString();
+    }
+    
+    function applySort() {
+        // Get all current parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const sortValue = document.getElementById('sortBy')?.value || '';
+        
+        // Update sort parameter while preserving others
+        if (sortValue) {
+            urlParams.set('sort_by', sortValue);
+        } else {
+            urlParams.delete('sort_by');
+        }
+        
+        // Redirect with updated sort
+        window.location.href = '{% url "doctors" %}?' + urlParams.toString();
+    }
+</script>
+
+{% endblock %}
