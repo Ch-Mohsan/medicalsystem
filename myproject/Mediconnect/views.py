@@ -18,6 +18,7 @@ from rest_framework.response import Response
 from .serializers import TimeSlotSerializer, AppointmentSerializer
 
 # Home and Public Pages
+
 def index(request):
     # Get top rated doctors with their average rating and review count
     top_doctors = Doctor.objects.annotate(
