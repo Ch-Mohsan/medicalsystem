@@ -1,0 +1,23 @@
+# Core Django Framework
+Django==6.0.2
+
+# Django REST Framework for API development
+djangorestframework==3.16.1
+
+# Image processing library
+Pillow==12.1.1
+
+# Environment variable management
+python-dotenv==1.2.1
+
+# HTTP library for OAuth and external requests
+requests==2.32.5
+
+# Additional dependencies (automatically installed with above packages)
+asgiref==3.11.1
+sqlparse==0.5.5
+tzdata==2025.3
+certifi==2026.1.4
+charset-normalizer==3.4.4
+idna==3.11
+urllib3==2.6.3
